@@ -6,3 +6,4 @@ target/
 
 day4/day4task/src/main/resources/firebase-service-account.json
 day5/bookmanagement_day5/src/main/resources/firebase-service-account.json
+firebase-service-account.json
