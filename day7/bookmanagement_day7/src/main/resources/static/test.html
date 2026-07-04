@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+
+    <!-- These two lines load libraries that know how to speak WebSocket + STOMP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+
+<h3>New Book Notifications</h3>
+<p id="newBooks"></p>
+
+<h3>Comments</h3>
+<input id="commentBox" placeholder="type something"/>
+<button onclick="sendComment()">Send</button>
+<p id="comments"></p>
+
+<script>
+    // Step 1: connect to the server's WebSocket address
+    var socket = new SockJS('/ws');
+    var stompClient = Stomp.over(socket);
+
+    // Step 2: once connected, start listening on two channels
+    stompClient.connect({}, function () {
+
+        // Listen for new book announcements
+        stompClient.subscribe('/topic/new-books', function (message) {
+            document.getElementById('newBooks').innerHTML += message.body + "<br/>";
+        });
+
+        // Listen for comments
+        stompClient.subscribe('/topic/book-comments', function (message) {
+            document.getElementById('comments').innerHTML += message.body + "<br/>";
+        });
+    });
+
+    // Step 3: this function runs when you click "Send"
+    function sendComment() {
+        var text = document.getElementById('commentBox').value;
+        stompClient.send("/app/book/comment", {}, text);
+    }
+</script>
+
+</body>
+</html>
